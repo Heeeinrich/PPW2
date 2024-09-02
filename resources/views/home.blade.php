@@ -1,4 +1,5 @@
 @extends('layout')
 @section('home')
-<h1>Halaman Home</h1>
+<h1>Halaman Homes</h1>
+
 @endsection
