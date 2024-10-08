@@ -13,6 +13,8 @@ use Illuminate\Http\RedirectResponse;
 //import Facade "Storage"
 use Illuminate\Support\Facades\Storage;
 
+use\App\Http\Models\Post
+
 class PostController extends Controller
 {
     /**
@@ -46,7 +48,7 @@ class PostController extends Controller
      * @return RedirectResponse
      */
 
-    public function store($request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         //validate form
         $this->validate($request, [

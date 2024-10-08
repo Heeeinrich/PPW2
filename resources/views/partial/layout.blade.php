@@ -93,7 +93,7 @@
             <h3 class="ml-4 text-white">LATIHAN UTS</h3>
         </div>
         <ul class="navbar-links">
-            <li><a href="{{ route('posts.index') }}">DASHBOARD</a></li>
+            <li><a href="{{ route('indek') }}">DASHBOARD</a></li>
             <li><a href="{{ route('secret') }}">APA YAAA?</a></li>
         </ul>
     </div>

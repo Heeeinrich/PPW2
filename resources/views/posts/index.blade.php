@@ -1,7 +1,7 @@
 @extends('partial.layout')
 
 @section('content')
-    @include('partial.searchbarrrrr')
+    @include('partial.searchbar')
 
     <div class="container mt-5">
         <div class="row">
