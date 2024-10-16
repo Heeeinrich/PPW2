@@ -19,5 +19,6 @@
     @yield('about')
     @yield('blog')
     @yield('contact')
+    @yield('')
 </body>
 </html>

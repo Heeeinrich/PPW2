@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BukuController;
 use App\Http\Controllers\logincontroller;
 use Illuminate\Support\Facades\Route;
 
@@ -15,14 +17,18 @@ Route::get('/about', function () {
     ]);
 })->name('about');
 
-Route::get('/blog', function () {
-    return view('blog', [
-        "name" => "Heinrich Radhitya"
-    ] );
-})->name('blog');
-
 Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
 Route::get('/login', [logincontroller::class, 'index']);
+Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+
+Route::get('/buku', [BukuController::class, 'index']);
+Route::get('/buku/create', [BukuController::class, 'create'])->name('buku.create');
+Route::post('/buku', [BukuController::class, 'store'])->name('buku.store');
+
+Route::delete('/buku/{id}', [BukuController::class, 'destroy'])->name('buku.destroy');
+Route::get('/buku/edit/{id}', [BukuController::class, 'edit'])->name('buku.edit');
+Route::put('/buku/{id}', [BukuController::class, 'update'])->name('buku.update');
+
