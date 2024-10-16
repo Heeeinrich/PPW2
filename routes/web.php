@@ -21,12 +21,15 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
+
+
 Route::get('/login', [logincontroller::class, 'index']);
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
 
 Route::get('/buku', [BukuController::class, 'index']);
 Route::get('/buku/create', [BukuController::class, 'create'])->name('buku.create');
 Route::post('/buku', [BukuController::class, 'store'])->name('buku.store');
+Route::get('/buku/search', [BukuController::class, 'search'])->name('buku.search');
 
 Route::delete('/buku/{id}', [BukuController::class, 'destroy'])->name('buku.destroy');
 Route::get('/buku/edit/{id}', [BukuController::class, 'edit'])->name('buku.edit');

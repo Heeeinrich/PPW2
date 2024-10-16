@@ -12,10 +12,25 @@ class BukuController extends Controller
      */
     public function index()
     {
-        $data_buku = Buku::all();
-        $hitung_data = Buku::count();
+        $batas = 10;
+        $data_buku = Buku::orderBy('id', 'desc')->get();
+        $jumlah_buku = Buku::count();
         $total_harga = Buku::sum('harga');
-        return view('buku.index',compact('data_buku','hitung_data','total_harga'));
+        $cari = '';
+        return view('buku.index', compact('data_buku', 'no', 'jumlah_buku', 'total_harga', 'cari'));
+    }
+
+    public function search(Request $request)
+    {
+        $batas = 10;
+        $cari = $request->kata;
+        $data_buku = Buku::where('judul', 'like', "%".$cari."%")
+            ->orWhere('penulis', 'like', "%".$cari."%")
+            ->paginate($batas);
+        $no = $batas * ($data_buku->currentPage() - 1);
+        $jumlah_buku = Buku::count();
+        $total_harga = Buku::sum('harga');
+        return view('buku.index', compact('data_buku', 'no', 'jumlah_buku', 'total_harga', 'cari'));
     }
 
     /**
@@ -31,7 +46,14 @@ class BukuController extends Controller
      */
     public function store(Request $request)
     {
-        $buku = new Buku();    
+        $this->validate($request,[
+            'judul' => 'required|string',
+            'penulis' =>'required|string',
+            'harga' =>'required|numeric',
+            'tgl_terbit' =>'required|date'
+        ]);
+
+        $buku = new Buku();
         $buku -> judul = $request->judul;
         $buku -> penulis = $request->penulis;
         $buku -> harga = $request->harga;

@@ -12,6 +12,13 @@
     <div class="container mt-5">
         <div class="card shadow-lg p-4">
             <h4 class="card-title mb-4">Tambah Buku</h4>
+            @if (count($errors) > 0)
+                <ul class="alert alert-danger">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            @endif
             <form method="POST" action="{{ route('buku.store') }}">
                 @csrf
                 <div class="form-floating mb-3">
@@ -32,6 +39,9 @@
                     <label for="tglTerbitBuku">Tanggal Terbit Buku</label>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Simpan</button>
+                <div>
+                    <a href="{{ '/buku' }}" class="btn btn-danger w-100">Kembali</a>
+                </div>
             </form>
         </div>
     </div>

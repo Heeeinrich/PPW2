@@ -13,11 +13,11 @@ class BukuSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 1000; $i++) {
             Buku::create([
                 'judul' => fake()->sentence(3),
                 'penulis'=> fake()->name(),
-                'harga'=> fake()->numberBetween(10000,50000),
+                'harga'=> fake()->numberBetween(130000,500000),
                 'tgl_terbit'=> fake()->date(),
             ]);
         }
