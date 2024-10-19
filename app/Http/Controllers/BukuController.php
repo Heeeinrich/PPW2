@@ -16,8 +16,9 @@ class BukuController extends Controller
         $data_buku = Buku::orderBy('id', 'desc')->get();
         $jumlah_buku = Buku::count();
         $total_harga = Buku::sum('harga');
+        // $no = $batas * ($data_buku->currentPage() -1);
         $cari = '';
-        return view('buku.index', compact('data_buku', 'no', 'jumlah_buku', 'total_harga', 'cari'));
+        return view('buku.index', compact('data_buku', 'jumlah_buku', 'total_harga', 'cari'));
     }
 
     public function search(Request $request)
@@ -30,7 +31,7 @@ class BukuController extends Controller
         $no = $batas * ($data_buku->currentPage() - 1);
         $jumlah_buku = Buku::count();
         $total_harga = Buku::sum('harga');
-        return view('buku.index', compact('data_buku', 'no', 'jumlah_buku', 'total_harga', 'cari'));
+        return view('buku.index', compact('data_buku', 'jumlah_buku', 'total_harga', 'cari'));
     }
 
     /**

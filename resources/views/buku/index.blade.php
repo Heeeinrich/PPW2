@@ -100,8 +100,9 @@
         </script>
 
         {{-- <div class="d-flex justify-content-center mt-4">
-            {{ $data_buku->links('pagination::bootstrap-5') }}
+            {{ $data_buku->appends(['entries' => request('entries')])->links('pagination::bootstrap-5') }}
         </div> --}}
+
 
         <div class="mt-3">
             <strong>Jumlah Buku: {{ $jumlah_buku }}</strong>

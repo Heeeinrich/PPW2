@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+    <script>
+        $( function() {
+          $( "#datepicker" ).datepicker();
+        } );
+    </script>
     <title>Document</title>
 </head>
 <body>
@@ -26,10 +36,9 @@
                     <input type="text" name="harga" value="{{ $buku -> harga }}" class="form-control" id="hargaBuku" placeholder="Harga Buku">
                     <label for="hargaBuku">Harga Buku</label>
                 </div>
-                <div class="form-floating mb-5">
-                    <input type="date" name="tgl_terbit" value="{{ $buku -> tgl_terbit }}" class="form-control" id="tglTerbitBuku"
-                        placeholder="Tanggal Terbit Buku">
-                    <label for="tglTerbitBuku">Tanggal Terbit Buku</label>
+                <div class="form-floating mb-4">
+                    <input type="text" name="tanggal_terbit" class="form-control" id="datepicker" placeholder="Tanggal Terbit Buku">
+                    <label for="datepicker">Tanggal Terbit Buku</label>
                 </div>
                 <div>
                     <button type="submit" class="btn btn-primary w-100 mb-2">Simpan</button>
