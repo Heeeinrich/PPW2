@@ -13,11 +13,11 @@ class BukuController extends Controller
     public function index()
     {
         $batas = 10;
-        $data_buku = Buku::orderBy('id', 'desc')->get();
+        $data_buku = Buku::orderBy('id', 'desc')->paginate($batas);
         $jumlah_buku = Buku::count();
         $total_harga = Buku::sum('harga');
-        $cari = '';
-        return view('buku.index', compact('data_buku', 'no', 'jumlah_buku', 'total_harga', 'cari'));
+        $cari = ''; // Inisialisasi variabel $cari
+        return view('buku.index', compact('data_buku', 'jumlah_buku', 'total_harga', 'cari'));
     }
 
     public function search(Request $request)
@@ -27,10 +27,7 @@ class BukuController extends Controller
         $data_buku = Buku::where('judul', 'like', "%".$cari."%")
             ->orWhere('penulis', 'like', "%".$cari."%")
             ->paginate($batas);
-        $no = $batas * ($data_buku->currentPage() - 1);
-        $jumlah_buku = Buku::count();
-        $total_harga = Buku::sum('harga');
-        return view('buku.index', compact('data_buku', 'no', 'jumlah_buku', 'total_harga', 'cari'));
+        return view('buku.index', compact('data_buku', 'cari'));
     }
 
     /**
@@ -46,29 +43,21 @@ class BukuController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'judul' => 'required|string',
-            'penulis' =>'required|string',
-            'harga' =>'required|numeric',
-            'tgl_terbit' =>'required|date'
+            'penulis' => 'required|string',
+            'harga' => 'required|numeric',
+            'tgl_terbit' => 'required|date'
         ]);
 
         $buku = new Buku();
-        $buku -> judul = $request->judul;
-        $buku -> penulis = $request->penulis;
-        $buku -> harga = $request->harga;
-        $buku -> tgl_terbit = $request->tgl_terbit;
-        $buku -> save();
+        $buku->judul = $request->judul;
+        $buku->penulis = $request->penulis;
+        $buku->harga = $request->harga;
+        $buku->tgl_terbit = $request->tgl_terbit;
+        $buku->save();
 
-        return redirect('/buku')->with('success', 'Data Buku Berhasil Ditambahkan');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        return redirect()->route('buku.index')->with('success', 'Data Buku Berhasil Ditambahkan');
     }
 
     /**
@@ -76,7 +65,7 @@ class BukuController extends Controller
      */
     public function edit(string $id)
     {
-        $buku = Buku::find($id);
+        $buku = Buku::findOrFail($id); // Menggunakan findOrFail
         return view('buku.update', compact('buku'));
     }
 
@@ -85,14 +74,21 @@ class BukuController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $buku = Buku::find($id);
-        $buku -> judul = $request->input('judul');
-        $buku -> penulis = $request->input('penulis');
-        $buku -> harga = $request->input('harga');
-        $buku -> tgl_terbit = $request->input('tgl_terbit');
-        $buku -> save();
+        $this->validate($request, [
+            'judul' => 'required|string',
+            'penulis' => 'required|string',
+            'harga' => 'required|numeric',
+            'tgl_terbit' => 'required|date'
+        ]);
 
-        return redirect('/buku')->with('success', 'Data Buku Berhasil Diubah');
+        $buku = Buku::findOrFail($id); // Menggunakan findOrFail
+        $buku->judul = $request->input('judul');
+        $buku->penulis = $request->input('penulis');
+        $buku->harga = $request->input('harga');
+        $buku->tgl_terbit = $request->input('tgl_terbit');
+        $buku->save();
+
+        return redirect()->route('buku.index')->with('success', 'Data Buku Berhasil Diubah');
     }
 
     /**
@@ -100,9 +96,9 @@ class BukuController extends Controller
      */
     public function destroy(string $id)
     {
-        $buku = Buku::find($id);
-        $buku -> delete();
+        $buku = Buku::findOrFail($id); // Menggunakan findOrFail
+        $buku->delete();
 
-        return redirect('/buku')->with('success', 'Data Buku Berhasil Dihapus');
+        return redirect()->route('buku.index')->with('success', 'Data Buku Berhasil Dihapus');
     }
 }

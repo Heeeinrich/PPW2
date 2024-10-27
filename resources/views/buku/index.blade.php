@@ -11,11 +11,41 @@
     <title>Halaman Buku</title>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url('/') }}">Eat The Book</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('home') }}">Home</a>
+                    </li>
+                    <!-- Other links -->
+                </ul>
+                <div class="d-flex">
+                    @guest
+                        <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">Login</a>
+                        <a href="{{ route('register') }}" class="btn btn-outline-secondary">Register</a>
+                    @else
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger">Logout</button>
+                        </form>
+                    @endguest
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <div class="container mt-5">
         <h1>Buku</h1>
 
         <div class="mb-3">
-            <a href="{{ route('buku.create') }}" class="btn btn-primary">Tambah Buku</a>
+            @auth
+                <a href="{{ route('buku.create') }}" class="btn btn-primary">Tambah Buku</a>
+            @endauth
         </div>
 
         <div class="mb-3">
@@ -32,7 +62,7 @@
             @else
                 <div class="alert alert-warning">
                     <h4>Data {{ $cari }} tidak ditemukan</h4>
-                    <a href="/buku" class="btn btn-warning">Kembali</a>
+                    <a href="{{ route('buku.index') }}" class="btn btn-warning">Kembali</a>
                 </div>
             @endif
         </div>
@@ -44,73 +74,75 @@
             </form>
         </div>
 
-        <div class="clearfix"></div>
-
-        <table id="myTable" class="display table table-striped">
-            <thead>
-                <tr>
-                    <th>id</th>
-                    <th>Judul Buku</th>
-                    <th>Penulis</th>
-                    <th>Harga</th>
-                    <th>Tanggal Terbit</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($data_buku as $index => $buku)
+        <div class="clearfix">
+            <table id="myTable" class="display table table-striped">
+                <thead>
                     <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $buku->judul }}</td>
-                        <td>{{ $buku->penulis }}</td>
-                        <td>{{ "Rp. " . number_format($buku->harga, 2, ',', '.') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($buku->tgl_terbit)->format('d-m-Y') }}</td>
-                        <td>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <a href="{{ route('buku.edit', $buku->id) }}" class="btn btn-primary">Edit</a>
-                                </div>
-                                <div class="col-md-3">
-                                    <form action="{{ route('buku.destroy', $buku->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button onclick="return confirm('Yakin mau di hapus')" type="submit" class="btn btn-danger">Hapus</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </td>
+                        <th>ID</th>
+                        <th>Judul Buku</th>
+                        <th>Penulis</th>
+                        <th>Harga</th>
+                        <th>Tanggal Terbit</th>
+                        @auth
+                        <th>Aksi</th>
+                        @endauth
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($data_buku as $index => $buku)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $buku->judul }}</td>
+                            <td>{{ $buku->penulis }}</td>
+                            <td>{{ "Rp. " . number_format($buku->harga, 2, ',', '.') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($buku->tgl_terbit)->format('d-m-Y') }}</td>
+                            <td>
+                                <div class="row">
+                                    @auth
+                                        <div class="col-md-3">
+                                            <a href="{{ route('buku.edit', $buku->id) }}" class="btn btn-primary">Edit</a>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <form action="{{ route('buku.destroy', $buku->id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button onclick="return confirm('Yakin mau di hapus')" type="submit" class="btn btn-danger">Hapus</button>
+                                            </form>
+                                        </div>
+                                    @endauth
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-        <
+
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
         <script>
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#myTable').DataTable({
                     "paging": true,
                     "searching": true,
                     "ordering": true,
                     "info": true,
                     "lengthMenu": [5, 10, 25, 50, 100],
-                    "pageLength": 10
+                    "pageLength": 10,
+                    "language": {
+                        "search": "Cari:",
+                        "lengthMenu": "Tampilkan _MENU_ data",
+                        "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                        "paginate": {
+                            "previous": "Sebelumnya",
+                            "next": "Selanjutnya"
+                        }
+                    }
                 });
             });
         </script>
-
-        {{-- <div class="d-flex justify-content-center mt-4">
-            {{ $data_buku->links('pagination::bootstrap-5') }}
-        </div> --}}
-
-        <div class="mt-3">
-            <strong>Jumlah Buku: {{ $jumlah_buku }}</strong>
-        </div>
-
-        <div class="mt-2">
-            <p>Total Data: {{ $jumlah_buku }} Buku</p>
-            <p>Total Harga: {{ "Rp. " . number_format($total_harga, 2, ',', '.') }}</p>
-        </div>
-    </div>
 </body>
 </html>
