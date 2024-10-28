@@ -4,7 +4,9 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BukuController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LoginRegisterController;
+use App\Http\Controllers\SendEmailController;
 use Illuminate\Support\Facades\Route;
+
 
 // Rute untuk halaman utama
 Route::get('/', function () {
@@ -48,7 +50,7 @@ Route::controller(LoginRegisterController::class)->group(function () {
     Route::post('/logout', 'logout')->name('logout');
 });
 
-// Rute untuk halaman home
-Route::get('/home', function () {
-    return view('buku.homepage');
-})->name('home');
+
+route::get('/send-mail', [SendEmailController::class, 'index'])->name('kirim-email');
+Route::post('/post-email2', [SendEmailController::class, 'store'])->name('post-email2');
+
