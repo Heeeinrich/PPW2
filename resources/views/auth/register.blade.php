@@ -20,8 +20,19 @@
 
                                     <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
 
-                                    <form class="mx-1 mx-md-4" action="{{ route('store') }}" method="POST">
+                                    <form class="mx-1 mx-md-4" action="{{ route('store') }}" method="POST" enctype="multipart/form-data">
                                         @csrf <!-- CSRF Token -->
+                                        <div class="mb-3 row">
+                                            <label for="photo" class="col-md-4 col-form-label text-md-end text-start">
+                                                Photo
+                                            </label>
+                                            <div class="col-md-6">
+                                                <input type="file" class="form-control @error('photo') is-invalid @enderror" name="photo" id="photo" value="{{ old('photo') }}">
+                                                @if ($errors->has('photo'))
+                                                <span class="text-danger">{{ $errors->first('photo') }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <i class="fas fa-user fa-lg me-3 fa-fw"></i>
                                             <div class="form-outline flex-fill mb-0">

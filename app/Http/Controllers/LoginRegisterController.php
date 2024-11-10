@@ -9,46 +9,56 @@ use App\Mail\RegisterMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class LoginRegisterController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('guest')->except(['logout']);
-    }
-
+    // Register Page
     public function register()
     {
         return view('register');
     }
 
+    // Register User and Handle File Upload
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'photo' => 'required|max:1999'
         ]);
+
+        if ($request->hasFile('photo')) {
+            $filenameWithExt = $request->file('photo')->getClientOriginalName();
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('photo')->getClientOriginalExtension();
+            $filenameSimpan = $filename . '_' . time() . '.' . $extension;
+            $path = $request->file('photo')->storeAs('photos', $filenameSimpan);
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+            'photo' => $path
         ]);
 
+        // Send email
         Mail::to($user->email)->send(new RegisterMail($user));
 
-        // Login otomatis setelah pendaftaran
         Auth::login($user);
 
         return redirect()->route('buku.index')->with('success', 'You have successfully registered & logged in!');
     }
 
+    // Login Page
     public function login()
     {
-        return view('login'); // Menampilkan form login
+        return view('login');
     }
 
+    // Authenticate User Login
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([
@@ -66,11 +76,13 @@ class LoginRegisterController extends Controller
         ])->onlyInput('email');
     }
 
+    // Logout User
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('homepage')->with('success', 'You have logged out successfully.');
+
+        return redirect()->route('login')->with('success', 'You have logged out successfully.');
     }
 }

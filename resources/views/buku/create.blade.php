@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -39,13 +39,15 @@
                     <label for="tglTerbitBuku">Tanggal Terbit Buku</label>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Simpan</button>
-                <div>
+                <div class="mt-2">
                     <a href="{{ '/buku' }}" class="btn btn-danger w-100">Kembali</a>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Bootstrap JS (optional, for additional functionality like modals, dropdowns, etc.) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

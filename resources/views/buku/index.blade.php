@@ -7,35 +7,46 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <title>Halaman Buku</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg bg-light">
         <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">Eat The Book</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+          <a class="navbar-brand" href="{{ URL('/') }}">Data Buku</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ms-auto">
+                @guest
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}">Home</a>
+                        <a class="nav-link {{ (request()->is('login')) ? 'active' : '' }}" href="{{ route('login') }}">Login</a>
                     </li>
-                    <!-- Other links -->
-                </ul>
-                <div class="d-flex">
-                    @guest
-                        <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">Login</a>
-                        <a href="{{ route('register') }}" class="btn btn-outline-secondary">Register</a>
-                    @else
-                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-danger">Logout</button>
-                        </form>
-                    @endguest
-                </div>
-            </div>
+                    <li class="nav-item">
+                        <a class="nav-link {{ (request()->is('register')) ? 'active' : '' }}" href="{{ route('register') }}">Register</a>
+                    </li>
+                @else
+                    <li class="nav-item dropdown">
+                        <img src="{{asset('storage/'.$user->photo )}}" width="10px">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ Auth::user()->name }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('logout') }} "
+                                onclick="event.preventDefault();
+                                document.getElementById('logout-form').submit();"
+                                >Logout</a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                @endguest
+            </ul>
+          </div>
         </div>
     </nav>
 
@@ -74,17 +85,18 @@
             </form>
         </div>
 
-        <div class="clearfix">
+        <div>
             <table id="myTable" class="display table table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Judul Buku</th>
-                        <th>Penulis</th>
-                        <th>Harga</th>
-                        <th>Tanggal Terbit</th>
+                        <th>Book Cover</th>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Price</th>
+                        <th>Publication Year</th>
                         @auth
-                        <th>Aksi</th>
+                        <th>Action</th>
                         @endauth
                     </tr>
                 </thead>
@@ -92,13 +104,21 @@
                     @foreach ($data_buku as $index => $buku)
                         <tr>
                             <td>{{ $index + 1 }}</td>
+                            <td>
+                                @if ($buku->filepath)
+                                    <div class="relative h-10 w-10">
+                                        <img src="{{ asset($buku->filepath) }}" alt=""
+                                        class="h-full w-full rounded-full object-cover object-center">
+                                    </div>
+                                @endif
+                            </td>
                             <td>{{ $buku->judul }}</td>
                             <td>{{ $buku->penulis }}</td>
                             <td>{{ "Rp. " . number_format($buku->harga, 2, ',', '.') }}</td>
                             <td>{{ \Carbon\Carbon::parse($buku->tgl_terbit)->format('d-m-Y') }}</td>
                             <td>
-                                <div class="row">
-                                    @auth
+                                @auth
+                                    <div class="row">
                                         <div class="col-md-3">
                                             <a href="{{ route('buku.edit', $buku->id) }}" class="btn btn-primary">Edit</a>
                                         </div>
@@ -109,16 +129,14 @@
                                                 <button onclick="return confirm('Yakin mau di hapus')" type="submit" class="btn btn-danger">Hapus</button>
                                             </form>
                                         </div>
-                                    @endauth
-                                </div>
+                                    </div>
+                                @endauth
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
-
-
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
