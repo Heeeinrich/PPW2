@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Buku;
 use Illuminate\Support\Facades\Auth;
+use Intervention\Image\Laravel\Facades\Image;
 
 class BukuController extends Controller
 {
@@ -58,6 +59,21 @@ class BukuController extends Controller
         $buku->penulis = $request->penulis;
         $buku->harga = $request->harga;
         $buku->tgl_terbit = $request->tgl_terbit;
+
+        // Handle thumbnail upload
+        if ($request->hasFile('thumbnail')) {
+            $fileName = time() . '_' . $request->thumbnail->getClientOriginalName();
+            $filePath = $request->file('thumbnail')->storeAs('uploads', $fileName, 'public');
+
+            // Resize and save the image
+            Image::read(storage_path('app/public/uploads/' . $fileName))
+                ->resize(240, 230)
+                ->save();
+
+            $buku->thumbnail = $fileName;
+            $buku->file_path = '/storage/uploads/' . $fileName;
+        }
+
         $buku->save();
 
         return redirect()->route('buku.index')->with('success', 'Data Buku Berhasil Ditambahkan');
@@ -82,22 +98,40 @@ class BukuController extends Controller
             'penulis' => 'required|string',
             'harga' => 'required|numeric',
             'tgl_terbit' => 'required|date',
-            'thumbnail' => 'image|mimes:jpeg,jpg,png|max:2048'
+            'thumbnail' => 'image|mimes:jpeg,jpg,png|max:2048' // Validate image if provided
         ]);
 
         $buku = Buku::findOrFail($id);
 
-        $fileName = time().'_'.$request->thumbnail->getClientOriginalName();
-        $filePath = $request->file('thumbnail')->storeAs('uploads', $fileName, 'public');
+        $buku->judul = $request->judul;
+        $buku->penulis = $request->penulis;
+        $buku->harga = $request->harga;
+        $buku->tgl_terbit = $request->tgl_terbit;
 
-        $buku->update([
-            'judul'      => $request->judul,
-            'penulis'    => $request->penulis,
-            'harga'      => $request->harga,
-            'tgl_terbit' => $request->tgl_terbit,
-            'thumbnail' => $fileName,
-            'file_path'  => '/storage'.$filePath
-        ]);
+        // Handle image update
+        if ($request->hasFile('thumbnail')) {
+            // Delete the old image if exists
+            if ($buku->thumbnail) {
+                $oldImagePath = storage_path('app/public/uploads/' . $buku->thumbnail);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath); // Delete old image
+                }
+            }
+
+            // Upload new image
+            $fileName = time() . '_' . $request->thumbnail->getClientOriginalName();
+            $filePath = $request->file('thumbnail')->storeAs('uploads', $fileName, 'public');
+
+            // Resize and save the new image
+            Image::read(storage_path('app/public/uploads/' . $fileName))
+                ->resize(240, 230)
+                ->save();
+
+            $buku->thumbnail = $fileName;
+            $buku->file_path = '/storage/uploads/' . $fileName;
+        }
+
+        $buku->save();
 
         return redirect()->route('buku.index')->with('success', 'Data Buku Berhasil Diubah');
     }
@@ -108,6 +142,15 @@ class BukuController extends Controller
     public function destroy(string $id)
     {
         $buku = Buku::findOrFail($id); // Menggunakan findOrFail
+
+        // Delete the thumbnail image if exists
+        if ($buku->thumbnail) {
+            $imagePath = storage_path('app/public/uploads/' . $buku->thumbnail);
+            if (file_exists($imagePath)) {
+                unlink($imagePath); // Delete image
+            }
+        }
+
         $buku->delete();
 
         return redirect()->route('buku.index')->with('success', 'Data Buku Berhasil Dihapus');

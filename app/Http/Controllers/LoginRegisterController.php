@@ -16,7 +16,7 @@ class LoginRegisterController extends Controller
     // Register Page
     public function register()
     {
-        return view('register');
+        return view('auth.register');
     }
 
     // Register User and Handle File Upload
@@ -55,7 +55,7 @@ class LoginRegisterController extends Controller
     // Login Page
     public function login()
     {
-        return view('login');
+        return view('auth.login');
     }
 
     // Authenticate User Login
@@ -83,6 +83,6 @@ class LoginRegisterController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'You have logged out successfully.');
+        return redirect()->route('auth.login')->with('success', 'You have logged out successfully.');
     }
 }

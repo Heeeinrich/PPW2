@@ -11,16 +11,16 @@ class Login
 {
     /**
      * Handle an incoming request.
-     *
-     * @param
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Check if the user is authenticated
         if (!Auth::check()) {
-            return redirect()->route('login');
+            // Redirect to login if not authenticated
+            return redirect()->route('login')->with('error', 'Please log in to access this page.');
         }
 
-        return $next($request); // Proceed with the request
+        // Proceed to the next request if authenticated
+        return $next($request);
     }
-
 }
